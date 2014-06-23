@@ -26,18 +26,25 @@ app.controller('GameController',function(){
         game = new GameLogic(settings, gameSetup)
         game.start();
     }
+    this.showPlayerForm = function(id){
+        $(".playerForm").hide();
+        $("#"+id).show();
+}
 });
 
 app.controller('TeamController',function(){
+    this.id = 36346;
     this.team={
         players:[]
     };
     this.addTeam=function(gameCtrl){
+        this.team.id = this.id;
         gameCtrl.teams.push(this.team);
         this.team={
             players:[]
         };
-    }
+        this.id = this.id+1;       
+    };
 
 });
 
@@ -50,6 +57,7 @@ app.controller('PlayerController',function(){
         this.player={
             words:[]
         }
+        $(".playerForm").hide();
     }
 });
 
@@ -212,7 +220,7 @@ function GameLogic(settings, setup){
     var clock;
     
     function start(){
-        $("#setup").hide();
+        $(".setup").hide();
         showStartScreen();
         
     }
