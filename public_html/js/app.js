@@ -59,7 +59,6 @@ function Team(teamName){
     var name=teamName;
     var players=[];
     var turn=0;
-    var points=0;
     var words=[];
     
     function playerInTurn(){
@@ -73,10 +72,7 @@ function Team(teamName){
         }
         return players[turn];
     }
-    function addPoints(x){
-        points = points+x;
-        return points;
-    }
+    
     function addPlayer(player){
         players.push(player);
     }
@@ -90,9 +86,6 @@ function Team(teamName){
             }
         }
     }
-    function setName(newName){
-        name=newName;
-    }
         function getName(){
         return name;
     }
@@ -102,19 +95,28 @@ function Team(teamName){
         }
         words[round].push(word);
     }
-    function getPoints(){
-        return points;
+    function getPoints(round){
+        if(round!=null){
+            return words[round].length;
+        } else {
+            var points = 0;
+            for (var i = 1; i<words.length; i++){
+                points = points + words[i].length;
+            }
+            return points;
+        }
+    }
+    function getWords(){
+        return words;
     }
     return{
         playerInTurn:playerInTurn,
         nextPlayer:nextPlayer,
-        addPoints:addPoints,
         addPlayer:addPlayer,
-        removePlayer:removePlayer,
-        setName:setName,
         getName:getName,
         addWord:addWord,
-        getPoints:getPoints
+        getPoints:getPoints,
+        getWords:getWords
     };    
 }
 
@@ -128,29 +130,23 @@ function GameSetup() {
     var teams=[];
     var turn=0;
     var wordList=[];
-    var guessed=[];
-    for (var i = 0; i<wordList.length;i++){
-        guessed[i]=undefined;
-    }
     var wordIndex=0;
     
     function nextWord(correct){
-        if(correct){
-            guessed[wordIndex]=teams[turn];
+        if(correct){           
             teams[turn].addWord(wordList[wordIndex],round)
+            wordList.splice(wordIndex,1);
+        } else {
+            wordIndex++;
         }
-        for(var i = 0; i<wordList.length;i++){
-            if(wordIndex<wordList.length-1){
-                wordIndex++;
-            } else {
-                wordIndex=0;
-            }
-            if(guessed[wordIndex]==undefined){
-                return wordList[wordIndex]
-            }
+        if(wordIndex>=wordList.length){
+            wordIndex=0;
         }
-        return "ENDOFROUND";
-
+        if(wordList.length>0){
+            return wordList[wordIndex];
+        } else {
+            return "ENDOFROUND";
+        }
     }
     
     function teamInTurn(){
@@ -158,7 +154,6 @@ function GameSetup() {
     }
     
     function nextTeamInTurn(){
-        console.log(turn)
         if(turn<teams.length-1){
             turn++;
         } else {
@@ -172,26 +167,11 @@ function GameSetup() {
         round++;
     }
     
-    function removePlayer(team){
-        for(var i = 0; i<teams.length;i++){
-            if(teams[i].getName==team){
-                for(var j = i; j<team.length;j++){
-                    team[j]=team[j+1];
-                }
-                return teams;
-            }
-        }
-    }
-    function savePoints(x){
-        return teams[turn].addPoints(x);
-    }
     function nextRound(){
-        guessed=[];
-        
+        for(var i = 0; i<teams.length;i++){
+            wordList = wordList.concat(teams[i].getWords()[round]);
+        }      
         wordList = shuffle(wordList);
-        for (var i = 0; i<wordList.length;i++){
-            guessed[i]=undefined;
-        }
         round++;
         
     }
@@ -211,7 +191,6 @@ function GameSetup() {
         wordList=wordList.concat(newWords);
     }
     return{
-        savePoints:savePoints,
         nextWord:nextWord,
         addTeam:addTeam,     
         teamInTurn:teamInTurn,
@@ -270,6 +249,8 @@ function GameLogic(settings, setup){
      
     function correctAnswer(){
         pointCounter++;
+        $("#correct").attr("disabled", true);
+        setTimeout(function(){$("#correct").attr("disabled", false);console.log("toimi")},500);
         nextWord(true);
     }
             
@@ -280,7 +261,6 @@ function GameLogic(settings, setup){
         
     function nextWord(correct){
         var word = setup.nextWord(correct);
-        console.log(word)
         if(word=="ENDOFROUND"){          
             showTurnEndScreen("ENDOFROUND");
             endTurn();
@@ -310,7 +290,7 @@ function GameLogic(settings, setup){
         $("#showPoints").show();
         $("#team").text(setup.teamInTurn().getName());
         $("#points").text("Kierroksen pisteet: " + pointCounter);
-        $("#totalPoints").text("Kokonaispisteet: " + setup.savePoints(pointCounter));
+        $("#totalPoints").text("Kokonaispisteet: " + setup.teamInTurn().getPoints());
         if(gameStatus=="ENDOFROUND"){
             if(setup.getRound()<settings.rounds){
                 $("#endRound").show();
@@ -329,7 +309,7 @@ function GameLogic(settings, setup){
         $("#showPoints").show();
         $("#team").text(setup.teamInTurn().getName());
         $("#points").text("Kierroksen pisteet: " + pointCounter);
-        $("#totalPoints").text("Kokonaispisteet: " + setup.savePoints(pointCounter)); 
+        $("#totalPoints").text("Kokonaispisteet: "+ setup.teamInTurn().getPoints()); 
     }
     
     function showEndGameScreen(){ 
@@ -345,15 +325,9 @@ function GameLogic(settings, setup){
         setup.nextRound();
         showStartScreen();
         $("#endRound").hide();
-    } 
-    function addTeam(){
-        var name = $("#newTeamName").value().toString();
-        var name = $("#newTeamName").value("");
     }
-
     
     return{
-        addTeam:addTeam,
         start:start,
         startTurn:startTurn,
         correct:correctAnswer,

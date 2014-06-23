@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="wordGame">
   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <script type="text/javascript" src="js/angular.min.js"></script>
     <!--<script type="text/javascript" src="js/bootstrap.min.js"></script>-->
@@ -14,28 +15,26 @@
             <h1>{{team.name}}</h1>
             <p></p>Pelaajat:
             <ul ng-repeat="player in team.players">
-                
-                <form name="removePlayerForm" ng-submit="gameCtrl.removePlayer(team,player)">  
-                - {{player.name}} <input type="submit" value="Remove">
-                </form>
-                
+                <li>
+                    {{player.name}} <button class="btn btn-default btn-sm" ng-click="gameCtrl.removePlayer(team,player)"><span class="glyphicon glyphicon-remove"></span>Remove</button>                  
+                </li>
                     
             </ul>
-                <form name="playerForm" ng-controller="PlayerController as playerCtrl" ng-submit="playerCtrl.addPlayer(team)">
-                    <input  ng-model="playerCtrl.player.name" placeholder="New player for team {{team.name}}" type="text"><BR>
-                    <input  ng-model="playerCtrl.player.words[0]" placeholder="Word 1" type="text"><BR>
-                    <input  ng-model="playerCtrl.player.words[1]" placeholder="Word 2" type="text"><BR>
-                    <input  ng-model="playerCtrl.player.words[2]" placeholder="Word 3" type="text"><BR>
-                    <input  ng-model="playerCtrl.player.words[3]" placeholder="Word 4" type="text"><BR>
-                    <input  ng-model="playerCtrl.player.words[4]" placeholder="Word 5" type="text"><BR>
-                    <input type="submit" value="Submit">
+                <form name="playerForm" ng-controller="PlayerController as playerCtrl" ng-submit="playerForm.$valid && playerCtrl.addPlayer(team)" novalidate>
+                    <input  ng-model="playerCtrl.player.name" placeholder="New player for team {{team.name}}" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[0]" placeholder="Word 1" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[1]" placeholder="Word 2" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[2]" placeholder="Word 3" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[3]" placeholder="Word 4" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[4]" placeholder="Word 5" type="text" required><BR>
+                    <input type="submit" value="Add Player">
                 </form>
             <hr>
           </div>
          
         <form name="teamForm" ng-controller="TeamController as teamCtrl" ng-submit="teamCtrl.addTeam(gameCtrl)">
             <input ng-model="teamCtrl.team.name" placeholder="Name of the new team" type="text">
-            <input type="submit" value="Submit">
+            <input type="submit" value="Add Team">
         </form>
         <form name="startForm" ng-submit="gameCtrl.startGame()">
             <input type="submit" value="StartGame">
