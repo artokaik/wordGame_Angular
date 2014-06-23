@@ -1,90 +1,107 @@
 <!DOCTYPE html>
 <html ng-app="wordGame">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-    <script type="text/javascript" src="js/angular.min.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <script type="text/javascript" src="js/angular.min.js"></script>
+
+        <script type="text/javascript" src="js/app.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    </head>
     
-    <script type="text/javascript" src="js/app.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-  </head>
-  <body ng-controller="GameController as gameCtrl">
+    <body ng-controller="GameController as gameCtrl">
       
-     <div class="jumbotron">
-      <div class="container setup">
-        <h1>Word Game</h1>
-        <p>Welcome to play very fun word game!</p>
-        <form name="teamForm" ng-controller="TeamController as teamCtrl" ng-submit="teamCtrl.addTeam(gameCtrl)">
-            <input ng-model="teamCtrl.team.name" placeholder="Name of the new team" type="text">
-            <input class="btn btn-default" type="submit" value="Add Team">
-        </form>
+        <div class="jumbotron">
+            <div class="container setup" align="center">
+                <h1>Word Game</h1>
+                <p>Welcome to play very fun word game!</p>
+                <form name="teamForm" ng-controller="TeamController as teamCtrl" ng-submit="teamCtrl.addTeam(gameCtrl)">
+                    <input ng-model="teamCtrl.team.name" placeholder="Name of the new team" type="text">
+                    <input class="btn btn-default" type="submit" value="Add Team">
+                </form>
 
-        <form name="startForm" ng-submit="gameCtrl.startGame()">
-            <input class="btn btn-default" type="submit" value="Start Game">
-        </form>
-      </div>
-    </div>
+
+            </div>
+            <div class="container startTurn" hidden="true">
+                <h1 id="teamInTurn"></h1>
+                <h1 id="playerInTurn"></h1>
+                <p id="instructions"></p>
+                <button id="startTurnButton" onclick="game.startTurn()">Aloita vuoro</button>
+            </div>
+            <div align="center" class="guessing" hidden="true">
+                 <h1 id="word"></h1>
+            </div>
+            <div class="endTurn endRound"  hidden="true">
+                <h1 id="team"></h1>
+                <h1 id="points"></h1>
+                <h1 id="totalPoints"></h1>
+            </div>
+        </div>
+    
       
 
        
-      <div class="row setup">
-          
-          <div class="col-md-2" ng-repeat="team in gameCtrl.teams">
-            <h1>{{team.name}}</h1>
+        <div class="row setup">
+            <div class="col-md-2" ng-repeat="team in gameCtrl.teams" align="center">
+                <h1>{{team.name}}</h1>
             
-            <ul ng-repeat="player in team.players">
-                <li>
-                    <b>{{player.name}}</b> <button class="btn btn-default btn-xs" ng-click="gameCtrl.removePlayer(team,player)"><span class="glyphicon glyphicon-remove"></span>Remove</button>                  
-                </li>                  
-            </ul>
+                <ul ng-repeat="player in team.players">
+                    <li>
+                        <b>{{player.name}}</b> <button class="btn btn-default btn-xs" ng-click="gameCtrl.removePlayer(team,player)"><span class="glyphicon glyphicon-remove"></span>Remove</button>                  
+                    </li>                  
+                </ul>
             
-            <button class="btn btn-default" id="newPlayer" ng-click="gameCtrl.showPlayerForm(team.id)">New player</button>
-            
-            <form name="playerForm" id="{{team.id}}" class="playerForm" hidden="true" ng-controller="PlayerController as playerCtrl" ng-submit="playerForm.$valid && playerCtrl.addPlayer(team)" novalidate>
-                <input  ng-model="playerCtrl.player.name" placeholder="New player for team {{team.name}}" type="text" required><BR>
-                <input  ng-model="playerCtrl.player.words[0]" placeholder="Word 1" type="text" required><BR>
-                <input  ng-model="playerCtrl.player.words[1]" placeholder="Word 2" type="text" required><BR>
-                <input  ng-model="playerCtrl.player.words[2]" placeholder="Word 3" type="text" required><BR>
-                <input  ng-model="playerCtrl.player.words[3]" placeholder="Word 4" type="text" required><BR>
-                <input  ng-model="playerCtrl.player.words[4]" placeholder="Word 5" type="text" required><BR>
-                <input class="btn btn-default" type="submit" value="Add Player">
-            </form>
-            <hr>
-          </div>
+                <button class="btn btn-default" id="newPlayer" ng-click="gameCtrl.showPlayerForm(team.id)">New player</button>
+
+                <form name="playerForm" id="{{team.id}}" class="playerForm" hidden="true" ng-controller="PlayerController as playerCtrl" ng-submit="playerForm.$valid && playerCtrl.addPlayer(team)" novalidate>
+                    <input  ng-model="playerCtrl.player.name" placeholder="New player for team {{team.name}}" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[0]" placeholder="Word 1" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[1]" placeholder="Word 2" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[2]" placeholder="Word 3" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[3]" placeholder="Word 4" type="text" required><BR>
+                    <input  ng-model="playerCtrl.player.words[4]" placeholder="Word 5" type="text" required><BR>
+                    <input class="btn btn-default" type="submit" value="Add Player">
+                </form>
+                
+            </div>
        
-      </div>
+        </div>
+        <hr>
+        
+        <div class="row setup">
+            <div align="center" class="col-md-12">
+                <form name="startForm" ng-submit="gameCtrl.startGame()">
+                    <input class="btn btn-default" type="submit" value="Start Game">
+                </form>             
+            </div>
+        </div>
       
-        <div id="guessing" hidden="true">
-            <h1 id="timer"></h1>
-            <h1 id="word"></h1>
-            <button id="correct" onclick="game.correct()">Oikein</button>
-            <button id="pass" onclick="game.pass()">Ohi</button>
+        <div class="row guessing" hidden="true">
+            <div align="center" class="col-md-12">
+                <button class="btn btn-default btn-lg" id="correct" onclick="game.correct()">Oikein</button>
+                <BR>
+                <BR>
+                <h1 id="timer"></h1>
+                <button hidden="true" id="pass" onclick="game.pass()">Ohi</button>
+            </div>
         </div>
-        <div id="startTurn" hidden="true">
-            <h1 id="teamInTurn"></h1>
-            <h1 id="playerInTurn"></h1>
-            <h1 id="instructions"></h1>
-            <button id="startTurnButton" onclick="game.startTurn()">Aloita vuoro</button>
-        </div>
-        <div id="showPoints" hidden="true">
-            <h1 id="team"></h1>
-            <h1 id="points"></h1>
-            <h1 id="totalPoints"></h1>
-        </div>
-        <div id="endTurn" hidden="true">
+        
+
+
+        <div class="row endTurn" hidden="true">
             <button id="start" onclick="game.showStartScreen()">Seuraava vuoro</button>
         </div>
 
-        <div id="endRound" hidden="true">
+        <div class="row endRound" hidden="true">
             <button id="start" onclick="game.nextRound()">Seuraava kierros</button>
         </div>
-        <div id="endGame" hidden="true">
+        <div class="row endGame" hidden="true">
             <button id="start" onclick="game.showEndGameScreen()">Näytä lopputulokset</button>
         </div>
-        <div id="endGameScreen" hidden="true">
+        <div class="row endGameScreen" hidden="true">
             <table id ="results">
                 <tr>
                     <th>Joukkue</th>
@@ -93,5 +110,5 @@
             </table>
                 
         </div>
-  </body>
+    </body>
 </html>

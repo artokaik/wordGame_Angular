@@ -227,7 +227,7 @@ function GameLogic(settings, setup){
     
     
     function startTurn(){ 
-        $("#startTurn").hide();
+        $(".startTurn").hide();
         time = settings.turnLength/1000;
         $("#timer").text(time);
         showGuessingScreen();
@@ -258,7 +258,7 @@ function GameLogic(settings, setup){
     function correctAnswer(){
         pointCounter++;
         $("#correct").attr("disabled", true);
-        setTimeout(function(){$("#correct").attr("disabled", false);console.log("toimi")},500);
+        setTimeout(function(){$("#correct").attr("disabled", false);},500);
         nextWord(true);
     }
             
@@ -280,50 +280,48 @@ function GameLogic(settings, setup){
       
     function showStartScreen(){
         var team = setup.teamInTurn();
-        $("#endTurn").hide();
-        $("#showPoints").hide();
-        $("#startTurn").show();
+        $(".endTurn").hide();
+        $(".showPoints").hide();
+        $(".startTurn").show();
         $("#teamInTurn").text("Joukkue: "+team.getName());
         $("#playerInTurn").text("Pelaaja: "+team.playerInTurn());
         $("#instructions").text(instructions[setup.getRound()]);
     }
     
     function showGuessingScreen(){
-        $("#startTurn").hide();
-        $("#guessing").show();
+        $(".startTurn").hide();
+        $(".guessing").show();
     }
     
     function showTurnEndScreen(gameStatus){    
-        $("#guessing").hide();       
-        $("#showPoints").show();
-        $("#team").text(setup.teamInTurn().getName());
+        $(".guessing").hide();       
+        $(".showPoints").show();
+        $("#team").text("Team: " + setup.teamInTurn().getName());
         $("#points").text("Kierroksen pisteet: " + pointCounter);
         $("#totalPoints").text("Kokonaispisteet: " + setup.teamInTurn().getPoints());
         if(gameStatus=="ENDOFROUND"){
             if(setup.getRound()<settings.rounds){
-                $("#endRound").show();
+                $(".endRound").show();
             } else {
-                $("#endGame").show();
+                $(".endGame").show();
             }
         } else {
-            $("#endTurn").show();
+            $(".endTurn").show();
         }
         
         
     }
     function showEndRoundScreen(){
-        $("#guessing").hide(); 
-        $("#endRound").show();
-        $("#showPoints").show();
+        $(".guessing").hide(); 
+        $(".endRound").show();
         $("#team").text(setup.teamInTurn().getName());
         $("#points").text("Kierroksen pisteet: " + pointCounter);
         $("#totalPoints").text("Kokonaispisteet: "+ setup.teamInTurn().getPoints()); 
     }
     
     function showEndGameScreen(){ 
-        $("#endGame").hide();
-        $("#showPoints").hide();
-        $("#endGameScreen").show();
+        $(".endGame").hide();
+        $(".endGameScreen").show();
         var teams = setup.getTeams();
         for (var i = 0; i<teams.length;i++){
             $("#results").append("<tr><td>"+teams[i].getName()+"</td><td>" + teams[i].getPoints()+"</td></tr>");
@@ -332,7 +330,7 @@ function GameLogic(settings, setup){
     function nextRound(){
         setup.nextRound();
         showStartScreen();
-        $("#endRound").hide();
+        $(".endRound").hide();
     }
     
     return{
